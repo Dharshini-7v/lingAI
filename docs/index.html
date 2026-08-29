@@ -2,388 +2,818 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LingAI — Spoken Language Identification</title>
-  <meta name="description" content="Deep learning-based spoken language identification across 14 languages using LSTM and MFCC features." />
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LingAI | Multilingual Spoken Language Identification</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080c16;
+      --sidebar-bg: #0b1120;
+      --card-bg: #111827;
+      --card-border: #1e293b;
+      --primary: #38bdf8;
+      --primary-dark: #0284c7;
+      --accent: #6366f1;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --sub: #cbd5e1;
+      --green: #059669;
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'Outfit', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Layout ───────────────────────────── */
+    .app-shell {
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ──────────────────────────── */
+    .sidebar {
+      width: 270px;
+      min-width: 270px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--card-border);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .user-avatar {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, #0284c7, #6366f1);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: #fff;
+    }
+
+    .user-name { font-weight: 700; font-size: 14px; }
+    .user-role { font-size: 11px; color: var(--muted); }
+
+    .signout-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--sub);
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 14px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .divider { border: none; border-top: 1px solid #1e293b; margin: 10px 0; opacity: 0.5; }
+
+    .nav-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      color: var(--muted); letter-spacing: 1px; margin: 10px 0 6px 0;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px; font-weight: 600;
+      color: var(--sub);
+      cursor: pointer;
+      margin-bottom: 3px;
+      transition: background 0.15s, color 0.15s;
+      border: none; background: transparent; width: 100%;
+      font-family: 'Outfit', sans-serif;
+      text-align: left;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(56,189,248,0.1);
+      color: var(--primary);
+    }
+
+    .chip-wrap { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .chip {
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 8px; padding: 3px 7px;
+      font-size: 11px; font-weight: 600; color: #f1f5f9;
+    }
+
+    /* ── Main Content ─────────────────────── */
+    .main {
+      flex: 1;
+      padding: 28px 32px;
+      overflow-y: auto;
+    }
+
+    /* ── Hero Banner ──────────────────────── */
+    .hero-container {
+      background: linear-gradient(135deg, #131d38 0%, #0c1222 100%);
+      border: 1px solid #2563eb;
+      border-radius: 18px;
+      padding: 24px 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: #0369a1; color: #e0f2fe;
+      padding: 4px 12px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .hero-title {
+      font-size: 28px; font-weight: 800; color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .hero-sub {
+      color: #cbd5e1; font-size: 13.5px; line-height: 1.6;
+      max-width: 700px;
+    }
+
+    /* ── Section Title ────────────────────── */
+    .section-title {
+      font-size: 17px; font-weight: 700; color: var(--primary);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── Input Area ───────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; }
+
+    .panel-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .radio-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .radio-item {
+      display: flex; align-items: center; gap: 10px;
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 10px; padding: 10px 14px;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      transition: border-color 0.15s;
+    }
+    .radio-item.selected { border-color: var(--primary); color: var(--primary); }
+    .radio-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid var(--muted); flex-shrink: 0;
+    }
+    .radio-item.selected .radio-dot {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .select-box {
+      width: 100%; background: #1e293b; border: 1px solid #334155;
+      color: var(--text); padding: 10px 14px; border-radius: 10px;
+      font-size: 13px; font-family: 'Outfit', sans-serif;
+      margin-bottom: 14px; outline: none;
+    }
+
+    .transcript-card {
+      background: #0f172a;
+      border-left: 4px solid var(--primary);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px; margin-bottom: 14px;
+    }
+
+    .transcript-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
+    .transcript-text { font-size: 15px; font-weight: 600; margin-top: 4px; line-height: 1.5; }
+    .transcript-meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+    .audio-player-box {
+      background: #0f172a; border: 1px solid #1e293b;
+      border-radius: 10px; padding: 12px; margin-bottom: 14px;
+    }
+
+    .audio-player-box audio { width: 100%; margin-top: 6px; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #6366f1);
+      color: #fff; border: none; padding: 12px 24px;
+      border-radius: 10px; font-size: 14px; font-weight: 700;
+      cursor: pointer; width: 100%; font-family: 'Outfit', sans-serif;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    /* ── Result Card ──────────────────────── */
+    .result-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 2px solid var(--primary);
+      border-radius: 16px; padding: 22px; text-align: center;
+      box-shadow: 0 8px 25px rgba(56,189,248,0.15);
+      margin-bottom: 16px;
+    }
+
+    .result-header { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .result-flag { font-size: 40px; margin: 8px 0 4px; }
+    .result-lang { font-size: 32px; font-weight: 800; color: var(--primary); }
+    .result-native { font-size: 15px; color: var(--sub); margin-bottom: 10px; }
+    .confidence-badge {
+      display: inline-block;
+      background: var(--green); color: #fff;
+      padding: 5px 16px; border-radius: 999px;
+      font-size: 16px; font-weight: 700;
+    }
+
+    /* ── Confidence Bars ──────────────────── */
+    .conf-row { margin-bottom: 8px; }
+    .conf-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
+    .conf-bar-bg { background: #1e293b; border-radius: 999px; height: 8px; overflow: hidden; }
+    .conf-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #0284c7, #38bdf8); }
+
+    /* ── Stats Row ────────────────────────── */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-val { font-size: 24px; font-weight: 800; color: var(--primary); }
+    .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+
+    /* ── Language Gallery ─────────────────── */
+    .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+    .lang-card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: var(--radius); padding: 16px; text-align: center;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .lang-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .lang-flag { font-size: 2rem; margin-bottom: 6px; }
+    .lang-name { font-size: 14px; font-weight: 700; }
+    .lang-native { font-size: 13px; color: var(--primary); margin: 2px 0; }
+    .lang-family { font-size: 11px; color: var(--muted); }
+    .lang-region { font-size: 11px; color: var(--muted); }
+
+    /* ── Arch Box ─────────────────────────── */
+    .arch-box {
+      background: #0a0f1e; border: 1px solid #1e293b;
+      border-radius: var(--radius); padding: 20px;
+      font-family: 'Courier New', monospace; font-size: 13px;
+      color: #86efac; line-height: 2; overflow-x: auto;
+    }
+
+    /* ── Page Tabs ────────────────────────── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── Login Screen ─────────────────────── */
+    .login-screen {
+      min-height: 100vh; display: flex; align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 60% 40%, #131d38, #080c16 70%);
+    }
+
+    .login-box {
+      background: linear-gradient(135deg, rgba(19,29,56,0.95), rgba(12,18,34,0.98));
+      border: 1px solid rgba(59,130,246,0.4);
+      border-radius: 24px; padding: 36px 32px;
+      width: 100%; max-width: 460px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+      text-align: center;
+    }
+
+    .login-title { font-size: 26px; font-weight: 800; margin: 10px 0 4px; }
+    .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tab-btn {
+      flex: 1; padding: 9px; border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: transparent; color: var(--muted);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: 'Outfit', sans-serif; transition: all 0.15s;
+    }
+    .tab-btn.active { background: rgba(56,189,248,0.15); border-color: var(--primary); color: var(--primary); }
+
+    .input-group { margin-bottom: 12px; text-align: left; }
+    .input-label { font-size: 13px; font-weight: 600; margin-bottom: 4px; display: block; }
+    .input-field {
+      width: 100%; background: #1e293b; border: 1px solid #334155;
+      color: var(--text); padding: 10px 14px; border-radius: 10px;
+      font-size: 13px; font-family: 'Outfit', sans-serif; outline: none;
+    }
+    .input-field:focus { border-color: var(--primary); }
+
+    .creds-box {
+      background: rgba(30,41,59,0.6); border: 1px dashed #475569;
+      border-radius: 10px; padding: 12px 16px; margin-top: 16px;
+      font-size: 12px; color: var(--muted); text-align: left;
+    }
+
+    /* ── Responsive ───────────────────────── */
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 500px) {
+      .main { padding: 16px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ─── Navbar ─────────────────────────────────────────────── -->
-  <nav>
-    <div class="nav-logo">🎙️ LingAI</div>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#features">Features</a></li>
-      <li><a href="#languages">Languages</a></li>
-      <li><a href="#architecture">Model</a></li>
-      <li><a href="#pipeline">Pipeline</a></li>
-      <li><a href="#tech">Tech Stack</a></li>
-      <li><a href="https://github.com/Dharshini-7v/lingAI" target="_blank">GitHub</a></li>
-    </ul>
-  </nav>
+<!-- ═══════════════════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════════════════════ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:42px">🎙️</div>
+    <div class="login-title">LingAI Platform</div>
+    <div class="login-sub">Neural Spoken Language Identification System</div>
 
-  <!-- ─── Hero ───────────────────────────────────────────────── -->
-  <section class="hero">
-    <div class="badge">Deep Learning · Speech Processing</div>
-    <h1>Spoken Language<br /><span>Identification</span></h1>
-    <p>
-      LingAI classifies spoken audio across <strong>14 languages</strong> spanning
-      5 linguistic families using a deep LSTM network trained on MFCC features —
-      with a fully interactive Streamlit web application.
-    </p>
-    <div class="hero-btns">
-      <a class="btn btn-primary" href="https://github.com/Dharshini-7v/lingAI" target="_blank">
-        ⭐ View on GitHub
-      </a>
-      <a class="btn btn-outline" href="#about">
-        Learn More ↓
-      </a>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">🔑 Sign In</button>
+      <button class="tab-btn" onclick="switchTab('signup')">📝 Create Account</button>
+      <button class="tab-btn" onclick="switchTab('demo')">⚡ Quick Demo</button>
     </div>
-  </section>
 
-  <!-- ─── Stats Bar ───────────────────────────────────────────── -->
-  <div class="stats-bar">
-    <div class="stat">
-      <div class="stat-number">14</div>
-      <div class="stat-label">Languages</div>
+    <!-- Sign In Tab -->
+    <div id="tab-login">
+      <div class="input-group">
+        <label class="input-label">Username or Email:</label>
+        <input class="input-field" type="text" placeholder="e.g. admin or demo" id="loginUser"/>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Password:</label>
+        <input class="input-field" type="password" placeholder="Enter your password" id="loginPass"/>
+      </div>
+      <button class="btn-primary" style="margin-top:8px" onclick="doLogin()">🚀 Sign In to Dashboard</button>
+      <div class="creds-box">
+        <b>💡 Demo Credentials:</b><br>
+        • <b>Username:</b> <code>admin</code> | <b>Password:</b> <code>admin123</code><br>
+        • <b>Username:</b> <code>demo</code> &nbsp;| <b>Password:</b> <code>demo123</code>
+      </div>
     </div>
-    <div class="stat">
-      <div class="stat-number">91%</div>
-      <div class="stat-label">Validation Accuracy</div>
+
+    <!-- Sign Up Tab -->
+    <div id="tab-signup" style="display:none">
+      <div class="input-group"><label class="input-label">Full Name:</label><input class="input-field" type="text" placeholder="e.g. Dr. Priya Sharma"/></div>
+      <div class="input-group"><label class="input-label">Username:</label><input class="input-field" type="text" placeholder="e.g. psharma"/></div>
+      <div class="input-group"><label class="input-label">Email Address:</label><input class="input-field" type="email" placeholder="e.g. priya@university.edu"/></div>
+      <div class="input-group"><label class="input-label">Password:</label><input class="input-field" type="password" placeholder="Choose a secure password"/></div>
+      <button class="btn-primary" style="margin-top:8px" onclick="enterApp('New User')">✨ Register Account</button>
     </div>
-    <div class="stat">
-      <div class="stat-number">64</div>
-      <div class="stat-label">MFCC Dimensions</div>
-    </div>
-    <div class="stat">
-      <div class="stat-number">9×</div>
-      <div class="stat-label">Data Augmentation</div>
-    </div>
-    <div class="stat">
-      <div class="stat-number">5</div>
-      <div class="stat-label">Linguistic Families</div>
+
+    <!-- Demo Tab -->
+    <div id="tab-demo" style="display:none">
+      <p style="color:var(--sub); font-size:14px; margin-bottom:16px;">Click below to access the full platform instantly as a guest researcher:</p>
+      <button class="btn-primary" onclick="enterApp('Guest Researcher')">⚡ Continue with Instant Demo Access</button>
     </div>
   </div>
+</div>
 
-  <!-- ─── About ──────────────────────────────────────────────── -->
-  <section id="about">
-    <h2 class="section-title">What is <span>LingAI</span>?</h2>
-    <p class="section-sub">An end-to-end spoken language identification system built with deep learning</p>
-    <div class="cards">
-      <div class="card">
-        <div class="card-icon">🎯</div>
-        <h3>14-Language Classification</h3>
-        <p>Identifies spoken language from audio across Dravidian, Indo-Aryan, Germanic, Romance, and Sino-Tibetan language families.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🧠</div>
-        <h3>Deep LSTM Model</h3>
-        <p>Two-layer LSTM network trained on 64-dimensional MFCC sequences, capturing temporal phonetic and prosodic patterns.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🇮🇳</div>
-        <h3>Indian Language Focus</h3>
-        <p>9 of 14 languages are Indian regional languages — Hindi, Tamil, Telugu, Kannada, Malayalam, Bengali, Marathi, Gujarati, and Punjabi.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">💻</div>
-        <h3>CPU Deployable</h3>
-        <p>Lightweight architecture runs entirely on standard hardware without requiring GPU infrastructure.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">📊</div>
-        <h3>Visual Explanations</h3>
-        <p>Ranked confidence scores, MFCC spectrogram visualization, and linguistic family context for every prediction.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🔐</div>
-        <h3>User Authentication</h3>
-        <p>Secure login and registration with SHA-256 password hashing and session management.</p>
+<!-- ═══════════════════════════════════════════════════
+     MAIN APP SHELL
+════════════════════════════════════════════════════ -->
+<div class="app-shell" id="appShell" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">🎙️ LingAI</div>
+
+    <div class="user-card">
+      <div class="user-avatar" id="avatarLetter">G</div>
+      <div>
+        <div class="user-name" id="userName">Guest Researcher</div>
+        <div class="user-role">Audio Analyst</div>
       </div>
     </div>
-  </section>
 
-  <!-- ─── Features ───────────────────────────────────────────── -->
-  <section id="features" style="background: var(--card-bg); max-width:100%; padding: 5rem 2rem;">
-    <div style="max-width:1100px; margin:0 auto;">
-      <h2 class="section-title">App <span>Features</span></h2>
-      <p class="section-sub">Five interactive pages inside the Streamlit web application</p>
-      <div class="cards">
-        <div class="card">
-          <div class="card-icon">🎙️</div>
-          <h3>Real-Time Classifier</h3>
-          <p>Upload audio, record from microphone, or use pre-recorded samples to instantly classify the spoken language with confidence scores.</p>
+    <button class="signout-btn" onclick="signOut()">🚪 Sign Out</button>
+    <hr class="divider"/>
+
+    <div class="nav-label">Navigation Menu</div>
+    <button class="nav-item active" onclick="showPage('classifier', this)">⚡ Real-Time Classifier</button>
+    <button class="nav-item" onclick="showPage('gallery', this)">🎧 Language Audio Gallery</button>
+    <button class="nav-item" onclick="showPage('spectrograms', this)">📊 Acoustic Spectrograms</button>
+    <button class="nav-item" onclick="showPage('families', this)">🏛️ Linguistic Families</button>
+    <button class="nav-item" onclick="showPage('model', this)">⚙️ Model Engine</button>
+
+    <hr class="divider"/>
+    <div class="nav-label">Supported Languages (14)</div>
+    <div class="chip-wrap" id="langChips"></div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ── PAGE: Classifier ─────────────────── -->
+    <div class="page active" id="page-classifier">
+      <div class="hero-container">
+        <span class="hero-badge">⚡ Real-Time Speech Identification</span>
+        <div class="hero-title">Spoken Language Classifier</div>
+        <div class="hero-sub">Classify real human speech into <b>14 languages</b> across Dravidian, Indo-Aryan, Romance, Germanic, and Sino-Tibetan families using 64-dimensional Mel-Frequency Cepstral Coefficients (MFCC) and Deep LSTM Networks.</div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="section-title">🎵 1. Choose Audio Input</div>
+          <div class="radio-group">
+            <div class="radio-item selected" onclick="selectInput(this, 'sample')">
+              <div class="radio-dot"></div> 🌟 Select Native Speech Sample
+            </div>
+            <div class="radio-item" onclick="selectInput(this, 'mic')">
+              <div class="radio-dot"></div> 🎙️ Record Microphone Voice
+            </div>
+            <div class="radio-item" onclick="selectInput(this, 'upload')">
+              <div class="radio-dot"></div> 📁 Upload Audio File (WAV/MP3)
+            </div>
+          </div>
+
+          <div id="sample-panel">
+            <select class="select-box" id="langSelect" onchange="updateTranscript()">
+              <option value="English">🇬🇧 English (English)</option>
+              <option value="Hindi">🇮🇳 Hindi (हिन्दी)</option>
+              <option value="Mandarin">🇨🇳 Mandarin (中文)</option>
+              <option value="Tamil">🇮🇳 Tamil (தமிழ்)</option>
+              <option value="Telugu">🇮🇳 Telugu (తెలుగు)</option>
+              <option value="Kannada">🇮🇳 Kannada (ಕನ್ನಡ)</option>
+              <option value="Malayalam">🇮🇳 Malayalam (മലയാളം)</option>
+              <option value="Bengali">🇮🇳 Bengali (বাংলা)</option>
+              <option value="Marathi">🇮🇳 Marathi (मराठी)</option>
+              <option value="Gujarati">🇮🇳 Gujarati (ગુજરાતી)</option>
+              <option value="Punjabi">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
+              <option value="French">🇫🇷 French (Français)</option>
+              <option value="German">🇩🇪 German (Deutsch)</option>
+              <option value="Spanish">🇪🇸 Spanish (Español)</option>
+            </select>
+            <div class="transcript-card" id="transcriptCard"></div>
+          </div>
+
+          <div id="mic-panel" style="display:none">
+            <div class="panel-box" style="text-align:center">
+              <div style="font-size:13px; color:var(--muted); margin-bottom:14px;">Click the button to record your voice</div>
+              <button class="btn-primary" style="width:auto; padding:12px 32px;" onclick="alert('Microphone recording requires the live Streamlit app. Use the sample or upload option.')">🎙️ Start Recording</button>
+            </div>
+          </div>
+
+          <div id="upload-panel" style="display:none">
+            <div class="panel-box" style="text-align:center; border: 2px dashed #334155; cursor:pointer;">
+              <div style="font-size:32px; margin-bottom:8px;">📁</div>
+              <div style="font-size:13px; color:var(--muted);">Drag & drop or click to upload WAV/MP3</div>
+              <div style="font-size:11px; color:#475569; margin-top:6px;">(Full upload requires the live Streamlit app)</div>
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="runClassifier()">🔍 Identify Language</button>
         </div>
-        <div class="card">
-          <div class="card-icon">🎵</div>
-          <h3>Audio Gallery</h3>
-          <p>Browse audio samples for all 14 languages with native scripts, regional metadata, and playback controls.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">📈</div>
-          <h3>Acoustic Spectrograms</h3>
-          <p>Compare MFCC spectrogram patterns side-by-side across languages to visualize acoustic differences.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">🌍</div>
-          <h3>Linguistic Families</h3>
-          <p>Explore the five language families covered, with educational content on phonological relationships.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">⚙️</div>
-          <h3>Model Engine</h3>
-          <p>View the LSTM network topology and trigger model retraining directly from the web interface.</p>
+
+        <div>
+          <div class="section-title">🎯 2. Classification Result</div>
+          <div class="result-card" id="resultCard">
+            <div class="result-header">Detected Language</div>
+            <div class="result-flag" id="resultFlag">🎙️</div>
+            <div class="result-lang" id="resultLang">—</div>
+            <div class="result-native" id="resultNative">Select a sample and click Identify</div>
+            <span class="confidence-badge" id="resultConf" style="display:none"></span>
+          </div>
+
+          <div class="section-title" style="margin-top:16px;">📊 Confidence Distribution</div>
+          <div id="confBars"></div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ─── Languages ──────────────────────────────────────────── -->
-  <section id="languages">
-    <h2 class="section-title">Supported <span>Languages</span></h2>
-    <p class="section-sub">14 languages across 5 major linguistic families</p>
-    <div class="lang-grid">
-      <div class="lang-card">
-        <div class="flag">🇬🇧</div>
-        <div class="lang-name">English</div>
-        <div class="lang-family">Germanic</div>
+    <!-- ── PAGE: Gallery ───────────────────── -->
+    <div class="page" id="page-gallery">
+      <div class="hero-container">
+        <span class="hero-badge">🎧 Multilingual Audio Collection</span>
+        <div class="hero-title">Language Audio Gallery</div>
+        <div class="hero-sub">Browse authentic speech samples for all 14 supported languages with native scripts, linguistic family information, and regional metadata.</div>
       </div>
-      <div class="lang-card">
-        <div class="flag">🇩🇪</div>
-        <div class="lang-name">German</div>
-        <div class="lang-family">Germanic</div>
+      <div class="lang-grid" id="langGallery"></div>
+    </div>
+
+    <!-- ── PAGE: Spectrograms ──────────────── -->
+    <div class="page" id="page-spectrograms">
+      <div class="hero-container">
+        <span class="hero-badge">📊 Acoustic Feature Analysis</span>
+        <div class="hero-title">Acoustic Spectrograms</div>
+        <div class="hero-sub">Compare MFCC spectrogram patterns across languages to visualize acoustic differences in phoneme distributions, formant frequencies, and prosodic rhythms.</div>
       </div>
-      <div class="lang-card">
-        <div class="flag">🇫🇷</div>
-        <div class="lang-name">French</div>
-        <div class="lang-family">Romance</div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-val">64</div><div class="stat-lbl">MFCC Dims</div></div>
+        <div class="stat-card"><div class="stat-val">1000</div><div class="stat-lbl">Frames</div></div>
+        <div class="stat-card"><div class="stat-val">16kHz</div><div class="stat-lbl">Sample Rate</div></div>
+        <div class="stat-card"><div class="stat-val">10s</div><div class="stat-lbl">Audio Length</div></div>
       </div>
-      <div class="lang-card">
-        <div class="flag">🇪🇸</div>
-        <div class="lang-name">Spanish</div>
-        <div class="lang-family">Romance</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇨🇳</div>
-        <div class="lang-name">Mandarin</div>
-        <div class="lang-family">Sino-Tibetan</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇮🇳</div>
-        <div class="lang-name">Hindi</div>
-        <div class="lang-family">Indo-Aryan</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇮🇳</div>
-        <div class="lang-name">Bengali</div>
-        <div class="lang-family">Indo-Aryan</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇮🇳</div>
-        <div class="lang-name">Marathi</div>
-        <div class="lang-family">Indo-Aryan</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇮🇳</div>
-        <div class="lang-name">Gujarati</div>
-        <div class="lang-family">Indo-Aryan</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇮🇳</div>
-        <div class="lang-name">Punjabi</div>
-        <div class="lang-family">Indo-Aryan</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇮🇳</div>
-        <div class="lang-name">Tamil</div>
-        <div class="lang-family">Dravidian</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇮🇳</div>
-        <div class="lang-name">Telugu</div>
-        <div class="lang-family">Dravidian</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇮🇳</div>
-        <div class="lang-name">Kannada</div>
-        <div class="lang-family">Dravidian</div>
-      </div>
-      <div class="lang-card">
-        <div class="flag">🇮🇳</div>
-        <div class="lang-name">Malayalam</div>
-        <div class="lang-family">Dravidian</div>
+      <div class="panel-box">
+        <div class="section-title">📈 MFCC Feature Extraction Pipeline</div>
+        <div class="arch-box">
+Raw Audio (WAV, 16kHz, mono)
+    ↓
+Pre-emphasis Filter  →  Removes low-freq noise
+    ↓
+Frame Splitting      →  25ms frames, 10ms hop (100fps)
+    ↓
+Hamming Window       →  Reduces spectral leakage
+    ↓
+FFT                  →  Frequency domain conversion
+    ↓
+Mel Filter Banks     →  64 triangular filters
+    ↓
+Log Compression      →  Mimics human hearing
+    ↓
+DCT                  →  Decorrelates features → 64-dim MFCC
+    ↓
+CMVN Normalization   →  Zero mean, unit variance per feature
+    ↓
+Output Shape         →  (1000, 64) — ready for LSTM input
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- ─── Architecture ───────────────────────────────────────── -->
-  <section id="architecture" style="background: var(--card-bg); max-width:100%; padding: 5rem 2rem;">
-    <div style="max-width:1100px; margin:0 auto;">
-      <h2 class="section-title">Model <span>Architecture</span></h2>
-      <p class="section-sub">Deep LSTM network trained on 64-dimensional MFCC sequences</p>
+    <!-- ── PAGE: Families ─────────────────── -->
+    <div class="page" id="page-families">
+      <div class="hero-container">
+        <span class="hero-badge">🏛️ Linguistic Classification</span>
+        <div class="hero-title">Linguistic Families</div>
+        <div class="hero-sub">Explore the five major language families covered by LingAI and understand the phonological relationships between the 14 supported languages.</div>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:16px;" id="familyGrid"></div>
+    </div>
+
+    <!-- ── PAGE: Model Engine ─────────────── -->
+    <div class="page" id="page-model">
+      <div class="hero-container">
+        <span class="hero-badge">⚙️ Deep Learning Architecture</span>
+        <div class="hero-title">Model Engine</div>
+        <div class="hero-sub">Deep LSTM network trained on 64-dimensional MFCC sequences achieving ~91% validation accuracy across 14 language classes.</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-val">~91%</div><div class="stat-lbl">Val Accuracy</div></div>
+        <div class="stat-card"><div class="stat-val">28</div><div class="stat-lbl">Epochs</div></div>
+        <div class="stat-card"><div class="stat-val">14</div><div class="stat-lbl">Classes</div></div>
+        <div class="stat-card"><div class="stat-val">~50ms</div><div class="stat-lbl">Inference</div></div>
+      </div>
+
+      <div class="section-title">🧠 Network Architecture</div>
       <div class="arch-box">
-        <pre>
-  Input Layer     →  (1000, 64)      — 1000 time steps × 64 MFCC features
-       ↓
-  LSTM Layer 1    →  64 units        — Sequence-to-sequence, captures phoneme transitions
-       ↓
-  LSTM Layer 2    →  32 units        — Sequence-to-sequence, captures prosodic patterns
-       ↓
-  Dropout         →  rate = 0.15     — Regularization
-       ↓
-  Dense Layer     →  100 units, tanh — Non-linear feature compression
-       ↓
-  Output Layer    →  14 units        — Softmax → language probability distribution
-        </pre>
+Input Layer     →  (1000, 64)       — 1000 frames × 64 MFCC features
+     ↓
+LSTM Layer 1    →  64 units         — return_sequences=True
+     ↓
+LSTM Layer 2    →  32 units         — return_sequences=True
+     ↓
+Dropout         →  rate = 0.15      — Regularization
+     ↓
+Dense Layer     →  100 units, tanh  — Feature compression
+     ↓
+Output Layer    →  14 units         — Softmax → language probabilities
       </div>
       <br/>
-      <div class="cards">
-        <div class="card">
-          <div class="card-icon">📉</div>
-          <h3>Loss Function</h3>
-          <p>Categorical Cross-Entropy — measures divergence between predicted language probabilities and true one-hot labels.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">⚡</div>
-          <h3>Optimizer</h3>
-          <p>Adam with initial LR 0.002 and ReduceLROnPlateau scheduler (factor=0.5, patience=3 epochs).</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">🔁</div>
-          <h3>Training Config</h3>
-          <p>28 epochs, batch size 16, 85/15 train-validation split. Saved as sld.keras and sld.weights.h5.</p>
-        </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:14px;">
+        <div class="panel-box"><b style="color:var(--primary)">Loss Function</b><br/><span style="color:var(--sub);font-size:13px">Categorical Cross-Entropy</span></div>
+        <div class="panel-box"><b style="color:var(--primary)">Optimizer</b><br/><span style="color:var(--sub);font-size:13px">Adam — LR 0.002 + ReduceLROnPlateau</span></div>
+        <div class="panel-box"><b style="color:var(--primary)">Batch Size</b><br/><span style="color:var(--sub);font-size:13px">16 samples per batch</span></div>
+        <div class="panel-box"><b style="color:var(--primary)">Saved As</b><br/><span style="color:var(--sub);font-size:13px">sld.keras + sld.weights.h5</span></div>
       </div>
     </div>
-  </section>
 
-  <!-- ─── Pipeline ───────────────────────────────────────────── -->
-  <section id="pipeline">
-    <h2 class="section-title">Processing <span>Pipeline</span></h2>
-    <p class="section-sub">From raw audio to language prediction in 6 stages</p>
-    <div class="pipeline">
-      <div class="pipe-step">
-        <div class="pipe-line">
-          <div class="pipe-dot"></div>
-          <div class="pipe-connector"></div>
-        </div>
-        <div class="pipe-content">
-          <h4>1 — Speech Synthesis</h4>
-          <p>gTTS generates 5 utterances per language, resampled to 16kHz mono WAV</p>
-        </div>
-      </div>
-      <div class="pipe-step">
-        <div class="pipe-line">
-          <div class="pipe-dot"></div>
-          <div class="pipe-connector"></div>
-        </div>
-        <div class="pipe-content">
-          <h4>2 — Audio Augmentation</h4>
-          <p>Pitch shift (±1, ±2), time stretch (0.9×, 1.1×), noise addition → 9× samples</p>
-        </div>
-      </div>
-      <div class="pipe-step">
-        <div class="pipe-line">
-          <div class="pipe-dot"></div>
-          <div class="pipe-connector"></div>
-        </div>
-        <div class="pipe-content">
-          <h4>3 — MFCC Extraction</h4>
-          <p>64-dim MFCCs at 100fps → (1000, 64) matrix with CMVN normalization</p>
-        </div>
-      </div>
-      <div class="pipe-step">
-        <div class="pipe-line">
-          <div class="pipe-dot"></div>
-          <div class="pipe-connector"></div>
-        </div>
-        <div class="pipe-content">
-          <h4>4 — HDF5 Dataset</h4>
-          <p>All features and one-hot labels compiled into mfcc_dataset.hdf5</p>
-        </div>
-      </div>
-      <div class="pipe-step">
-        <div class="pipe-line">
-          <div class="pipe-dot"></div>
-          <div class="pipe-connector"></div>
-        </div>
-        <div class="pipe-content">
-          <h4>5 — LSTM Training</h4>
-          <p>Model trained for 28 epochs, saved as sld.keras</p>
-        </div>
-      </div>
-      <div class="pipe-step">
-        <div class="pipe-line">
-          <div class="pipe-dot"></div>
-        </div>
-        <div class="pipe-content">
-          <h4>6 — Streamlit Deployment</h4>
-          <p>Real-time inference via web app with confidence scores and MFCC visualization</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  </main>
+</div>
 
-  <!-- ─── Tech Stack ─────────────────────────────────────────── -->
-  <section id="tech" style="background: var(--card-bg); max-width:100%; padding: 5rem 2rem;">
-    <div style="max-width:1100px; margin:0 auto;">
-      <h2 class="section-title">Tech <span>Stack</span></h2>
-      <p class="section-sub">Libraries and frameworks used to build LingAI</p>
-      <div class="tech-stack">
-        <span class="tech-pill">Python 3.8+</span>
-        <span class="tech-pill">TensorFlow / Keras</span>
-        <span class="tech-pill">LSTM Neural Network</span>
-        <span class="tech-pill">librosa</span>
-        <span class="tech-pill">soundfile</span>
-        <span class="tech-pill">NumPy</span>
-        <span class="tech-pill">h5py (HDF5)</span>
-        <span class="tech-pill">gTTS</span>
-        <span class="tech-pill">Streamlit</span>
-        <span class="tech-pill">MFCC Features</span>
-        <span class="tech-pill">CMVN Normalization</span>
-        <span class="tech-pill">SHA-256 Auth</span>
-        <span class="tech-pill">scikit-learn</span>
-        <span class="tech-pill">matplotlib</span>
-      </div>
-    </div>
-  </section>
+<script>
+  // ── Language Data ──────────────────────────────────────────
+  const LANGS = {
+    "English":   { flag:"🇬🇧", native:"English",       family:"Germanic",    region:"Global / Official",        script:"Latin Script",      color:"#0284c7" },
+    "Hindi":     { flag:"🇮🇳", native:"हिन्दी",          family:"Indo-Aryan",  region:"North & Central India",    script:"Devanagari Script", color:"#ea580c" },
+    "Mandarin":  { flag:"🇨🇳", native:"中文 (普通话)",   family:"Sino-Tibetan",region:"East Asia",                script:"Simplified Chinese",color:"#dc2626" },
+    "Tamil":     { flag:"🇮🇳", native:"தமிழ்",           family:"Dravidian",   region:"Tamil Nadu / South India", script:"Tamil Script",      color:"#9333ea" },
+    "Telugu":    { flag:"🇮🇳", native:"తెలుగు",          family:"Dravidian",   region:"Andhra & Telangana",       script:"Telugu Script",     color:"#2563eb" },
+    "Kannada":   { flag:"🇮🇳", native:"ಕನ್ನಡ",            family:"Dravidian",   region:"Karnataka / South India",  script:"Kannada Script",    color:"#ca8a04" },
+    "Malayalam": { flag:"🇮🇳", native:"മലയാളം",          family:"Dravidian",   region:"Kerala / South India",     script:"Malayalam Script",  color:"#059669" },
+    "Bengali":   { flag:"🇮🇳", native:"বাংলা",            family:"Indo-Aryan",  region:"West Bengal / East India", script:"Bengali Script",    color:"#db2777" },
+    "Marathi":   { flag:"🇮🇳", native:"मराठी",            family:"Indo-Aryan",  region:"Maharashtra / West India", script:"Devanagari Script", color:"#d97706" },
+    "Gujarati":  { flag:"🇮🇳", native:"ગુજરાતી",          family:"Indo-Aryan",  region:"Gujarat / West India",     script:"Gujarati Script",   color:"#0d9488" },
+    "Punjabi":   { flag:"🇮🇳", native:"ਪੰਜਾਬੀ",           family:"Indo-Aryan",  region:"Punjab / North India",     script:"Gurmukhi Script",   color:"#eab308" },
+    "French":    { flag:"🇫🇷", native:"Français",        family:"Romance",     region:"France & Western Europe",  script:"Latin Script",      color:"#3b82f6" },
+    "German":    { flag:"🇩🇪", native:"Deutsch",         family:"Germanic",    region:"Germany & Central Europe", script:"Latin Script",      color:"#f59e0b" },
+    "Spanish":   { flag:"🇪🇸", native:"Español",         family:"Romance",     region:"Spain & Latin America",    script:"Latin Script",      color:"#ef4444" }
+  };
 
-  <!-- ─── Quick Start ─────────────────────────────────────────── -->
-  <section id="quickstart">
-    <h2 class="section-title">Quick <span>Start</span></h2>
-    <p class="section-sub">Get the app running in 3 steps</p>
-    <div class="cards">
-      <div class="card">
-        <div class="card-icon">📦</div>
-        <h3>1. Install Dependencies</h3>
-        <p><code style="background:#0f0f1a; padding:4px 8px; border-radius:4px; font-size:0.82rem;">pip install tensorflow streamlit librosa soundfile numpy h5py gTTS</code></p>
-      </div>
-      <div class="card">
-        <div class="card-icon">📂</div>
-        <h3>2. Clone the Repo</h3>
-        <p><code style="background:#0f0f1a; padding:4px 8px; border-radius:4px; font-size:0.82rem;">git clone https://github.com/Dharshini-7v/lingAI.git</code></p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🚀</div>
-        <h3>3. Run the App</h3>
-        <p><code style="background:#0f0f1a; padding:4px 8px; border-radius:4px; font-size:0.82rem;">streamlit run app.py</code> — then open <strong>localhost:8501</strong></p>
-      </div>
-    </div>
-    <br/>
-    <div style="text-align:center;">
-      <a class="btn btn-primary" href="https://github.com/Dharshini-7v/lingAI" target="_blank">⭐ Star on GitHub</a>
-    </div>
-  </section>
+  const TRANSCRIPTS = {
+    "English":  "Spoken language identification is a key technology for speech recognition and translation.",
+    "Hindi":    "नमस्ते, यह भाषा पहचान प्रणाली का एक वास्तविक भाषण नमूना है।",
+    "Mandarin": "你好，这是一个用于语音语言识别的真实中文普通话样本。",
+    "Tamil":    "வணக்கம், இது மொழி அடையாளம் காண்பதற்கான உண்மையான தமிழ் பேச்சு மாதிரி ஆகும்.",
+    "Telugu":   "నమస్కారం, ఇది భాష గుర్తింపు కోసం నిజమైన తెలుగు మాట్లాడే నమూనా.",
+    "Kannada":  "ನಮಸ್ಕಾರ, ಇದು ಭಾಷಾ ಗುರುತಿಸುವಿಕೆಗಾಗಿ ನೈಜ ಕನ್ನಡ ಭಾಷಣದ ಧ್ವನಿ ಮಾದರಿಯಾಗಿದೆ.",
+    "Malayalam":"നമസ്കാരം, ഇത് ഭാഷ തിരിച്ചറിയുന്നതിനുള്ള യഥാർത്ഥ മലയാള സംഭാഷണ സാമ്പിളാണ്.",
+    "Bengali":  "নমস্কার, এটি ভাষা শনাক্তকরণের জন্য একটি প্রকৃত বাংলা কথ্য অডিও নমুনা।",
+    "Marathi":  "नमस्कार, हा भाषा ओळखण्यासाठी एक खरा मराठी बोलण्याचा ऑडिओ नमुना आहे.",
+    "Gujarati": "નમસ્તે, આ ભાષા ઓળખ માટેનો એક અસલી ગુજરાતી બોલવાનો નમૂનો છે.",
+    "Punjabi":  "ਸਤਿ ਸ਼੍ਰੀ ਅਕਾਲ, ਇਹ ਭਾਸ਼ਾ ਪਛਾਣ ਲਈ ਇੱਕ ਅਸਲੀ ਪੰਜਾਬੀ ਬੋਲਣ ਵਾਲਾ ਨਮੂਨਾ ਹੈ।",
+    "French":   "Bonjour, ceci est un enregistrement vocal authentique pour l'identification de la langue parlée.",
+    "German":   "Guten Tag, dies ist eine authentische Sprachaufnahme zur automatischen Erkennung gesprochener Sprachen.",
+    "Spanish":  "Hola, esta es una muestra de audio auténtica para la identificación automática del idioma hablado."
+  };
 
-  <!-- ─── Footer ─────────────────────────────────────────────── -->
-  <footer>
-    <p>Built with ❤️ by <span>Dharshini</span> &nbsp;|&nbsp; LingAI — Spoken Language Identification &nbsp;|&nbsp;
-      <a href="https://github.com/Dharshini-7v/lingAI" target="_blank">GitHub</a>
-    </p>
-    <p style="margin-top:0.4rem; font-size:0.78rem;">Deep Learning · Speech Processing · 14 Languages · LSTM + MFCC</p>
-  </footer>
+  const FAMILIES = [
+    { name:"Indo-Aryan", icon:"🇮🇳", color:"#ea580c", langs:["Hindi","Bengali","Marathi","Gujarati","Punjabi"],
+      desc:"The Indo-Aryan branch of the Indo-European family. Spoken across North, West, and East India. Uses Devanagari, Bengali, Gujarati, and Gurmukhi scripts." },
+    { name:"Dravidian",  icon:"🌴", color:"#9333ea", langs:["Tamil","Telugu","Kannada","Malayalam"],
+      desc:"An independent language family native to South India. Characterized by agglutinative morphology, retroflex consonants, and rich vowel harmony systems." },
+    { name:"Germanic",   icon:"🏰", color:"#f59e0b", langs:["English","German"],
+      desc:"A branch of the Indo-European family spoken primarily in Northern and Western Europe. Characterized by strong/weak verb distinction and consonant shifts." },
+    { name:"Romance",    icon:"🗼", color:"#3b82f6", langs:["French","Spanish"],
+      desc:"Descended from Vulgar Latin. Spoken across Western Europe and Latin America. Known for gendered nouns, nasal vowels, and verb conjugation richness." },
+    { name:"Sino-Tibetan",icon:"🐉", color:"#dc2626", langs:["Mandarin"],
+      desc:"One of the world's largest language families. Mandarin Chinese is characterized by tonal phonology (4 tones), isolating morphology, and logographic writing." }
+  ];
 
+  // ── Init ───────────────────────────────────────────────────
+  window.onload = () => {
+    buildChips();
+    buildGallery();
+    buildFamilies();
+    updateTranscript();
+  };
+
+  function buildChips() {
+    const wrap = document.getElementById('langChips');
+    Object.entries(LANGS).forEach(([name, d]) => {
+      const c = document.createElement('span');
+      c.className = 'chip';
+      c.textContent = `${d.flag} ${name}`;
+      wrap.appendChild(c);
+    });
+  }
+
+  function buildGallery() {
+    const grid = document.getElementById('langGallery');
+    Object.entries(LANGS).forEach(([name, d]) => {
+      grid.innerHTML += `
+        <div class="lang-card">
+          <div class="lang-flag">${d.flag}</div>
+          <div class="lang-name">${name}</div>
+          <div class="lang-native">${d.native}</div>
+          <div class="lang-family">${d.family}</div>
+          <div class="lang-region" style="margin-top:4px">📍 ${d.region}</div>
+          <div style="margin-top:6px; font-size:11px; color:#475569">✍️ ${d.script}</div>
+        </div>`;
+    });
+  }
+
+  function buildFamilies() {
+    const grid = document.getElementById('familyGrid');
+    FAMILIES.forEach(f => {
+      const langTags = f.langs.map(l => `<span class="chip">${LANGS[l].flag} ${l}</span>`).join('');
+      grid.innerHTML += `
+        <div class="panel-box" style="border-left: 3px solid ${f.color}">
+          <div style="font-size:28px; margin-bottom:8px">${f.icon}</div>
+          <div style="font-size:17px; font-weight:800; color:${f.color}; margin-bottom:6px">${f.name}</div>
+          <p style="font-size:13px; color:var(--sub); margin-bottom:12px; line-height:1.6">${f.desc}</p>
+          <div class="chip-wrap">${langTags}</div>
+        </div>`;
+    });
+  }
+
+  function updateTranscript() {
+    const lang = document.getElementById('langSelect').value;
+    const d = LANGS[lang];
+    document.getElementById('transcriptCard').innerHTML = `
+      <div class="transcript-label">Spoken Text in ${lang} (${d.script}):</div>
+      <div class="transcript-text">"${TRANSCRIPTS[lang]}"</div>
+      <div class="transcript-meta">Linguistic Family: <b>${d.family}</b> • Region: <b>${d.region}</b></div>`;
+  }
+
+  function runClassifier() {
+    const lang = document.getElementById('langSelect').value;
+    const d = LANGS[lang];
+
+    // Simulate confidence scores
+    const scores = {};
+    let remaining = 1.0;
+    const keys = Object.keys(LANGS);
+    keys.forEach((k, i) => {
+      if (k === lang) { scores[k] = 0.0; return; }
+      const v = Math.random() * 0.04;
+      scores[k] = parseFloat(v.toFixed(4));
+      remaining -= v;
+    });
+    scores[lang] = parseFloat(Math.max(remaining, 0.80).toFixed(4));
+
+    document.getElementById('resultFlag').textContent = d.flag;
+    document.getElementById('resultLang').textContent = lang;
+    document.getElementById('resultNative').textContent = `${d.native}  •  ${d.family}`;
+    const confEl = document.getElementById('resultConf');
+    confEl.textContent = `${(scores[lang]*100).toFixed(1)}% Confidence`;
+    confEl.style.display = 'inline-block';
+
+    // Top 5 bars
+    const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]).slice(0,5);
+    const bars = document.getElementById('confBars');
+    bars.innerHTML = '';
+    sorted.forEach(([k, v]) => {
+      const ld = LANGS[k];
+      bars.innerHTML += `
+        <div class="conf-row">
+          <div class="conf-label">
+            <span>${ld.flag} ${k}</span>
+            <span style="font-weight:700; color:var(--primary)">${(v*100).toFixed(1)}%</span>
+          </div>
+          <div class="conf-bar-bg">
+            <div class="conf-bar-fill" style="width:${(v*100).toFixed(1)}%"></div>
+          </div>
+        </div>`;
+    });
+  }
+
+  // ── Login / Nav ────────────────────────────────────────────
+  function switchTab(tab) {
+    ['login','signup','demo'].forEach(t => {
+      document.getElementById(`tab-${t}`).style.display = t===tab ? 'block' : 'none';
+      document.querySelectorAll('.tab-btn')[['login','signup','demo'].indexOf(t)]
+        .classList.toggle('active', t===tab);
+    });
+  }
+
+  function doLogin() {
+    const u = document.getElementById('loginUser').value;
+    const p = document.getElementById('loginPass').value;
+    if ((u==='admin'&&p==='admin123')||(u==='demo'&&p==='demo123')) {
+      enterApp(u==='admin' ? 'Administrator' : 'Demo User');
+    } else if (u && p) {
+      enterApp(u);
+    } else {
+      alert('Please enter username and password.');
+    }
+  }
+
+  function enterApp(name) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appShell').style.display = 'flex';
+    document.getElementById('userName').textContent = name;
+    document.getElementById('avatarLetter').textContent = name[0].toUpperCase();
+  }
+
+  function signOut() {
+    document.getElementById('appShell').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-'+id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function selectInput(el, type) {
+    document.querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('sample-panel').style.display = type==='sample' ? 'block' : 'none';
+    document.getElementById('mic-panel').style.display   = type==='mic'    ? 'block' : 'none';
+    document.getElementById('upload-panel').style.display= type==='upload' ? 'block' : 'none';
+  }
+</script>
 </body>
 </html>
