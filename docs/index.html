@@ -484,11 +484,13 @@
               <option value="Spanish">🇪🇸 Spanish (Español)</option>
             </select>
             <div class="transcript-card" id="transcriptCard"></div>
-            <div style="font-size:13px; font-weight:600; margin-bottom:6px;">🔊 Audio Playback:</div>
-            <audio id="sampleAudio" controls style="width:100%; border-radius:8px; margin-bottom:12px;">
-              <source id="sampleAudioSrc" src="" type="audio/wav"/>
-              Your browser does not support audio playback.
-            </audio>
+            <div style="font-size:13px; font-weight:600; margin-bottom:6px; color:var(--primary);">🔊 Audio Playback:</div>
+            <div style="background:#0f172a; border:1px solid #334155; border-radius:10px; padding:12px; margin-bottom:14px;">
+              <audio id="sampleAudio" controls style="width:100%; display:block;">
+                <source id="sampleAudioSrc" src="audio/sample_english.wav" type="audio/wav"/>
+                Your browser does not support audio playback.
+              </audio>
+            </div>
           </div>
 
           <div id="mic-panel" style="display:none">
@@ -732,11 +734,10 @@ Output Layer    →  14 units         — Softmax → language probabilities
       <div class="transcript-label">Spoken Text in ${lang} (${d.script}):</div>
       <div class="transcript-text">"${TRANSCRIPTS[lang]}"</div>
       <div class="transcript-meta">Linguistic Family: <b>${d.family}</b> • Region: <b>${d.region}</b></div>`;
-    // Update audio player
+    // Update audio player src and reload
     const audioFile = `audio/sample_${lang.toLowerCase()}.wav`;
-    const src = document.getElementById('sampleAudioSrc');
     const player = document.getElementById('sampleAudio');
-    src.src = audioFile;
+    player.src = audioFile;
     player.load();
   }
 
