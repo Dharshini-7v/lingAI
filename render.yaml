@@ -2,8 +2,8 @@ services:
   - type: web
     name: lingai
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && python -c "import tensorflow as tf; m=tf.keras.models.load_model('sld.keras'); print('Model OK:', m.output_shape)"
     startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --server.enableCORS false --server.enableXsrfProtection false
     envVars:
       - key: PYTHON_VERSION
-        value: 3.10.0
+        value: 3.11.0
