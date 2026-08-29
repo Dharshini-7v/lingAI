@@ -484,6 +484,11 @@
               <option value="Spanish">🇪🇸 Spanish (Español)</option>
             </select>
             <div class="transcript-card" id="transcriptCard"></div>
+            <div style="font-size:13px; font-weight:600; margin-bottom:6px;">🔊 Audio Playback:</div>
+            <audio id="sampleAudio" controls style="width:100%; border-radius:8px; margin-bottom:12px;">
+              <source id="sampleAudioSrc" src="" type="audio/wav"/>
+              Your browser does not support audio playback.
+            </audio>
           </div>
 
           <div id="mic-panel" style="display:none">
@@ -690,6 +695,7 @@ Output Layer    →  14 units         — Softmax → language probabilities
   function buildGallery() {
     const grid = document.getElementById('langGallery');
     Object.entries(LANGS).forEach(([name, d]) => {
+      const audioFile = `audio/sample_${name.toLowerCase()}.wav`;
       grid.innerHTML += `
         <div class="lang-card">
           <div class="lang-flag">${d.flag}</div>
@@ -698,6 +704,9 @@ Output Layer    →  14 units         — Softmax → language probabilities
           <div class="lang-family">${d.family}</div>
           <div class="lang-region" style="margin-top:4px">📍 ${d.region}</div>
           <div style="margin-top:6px; font-size:11px; color:#475569">✍️ ${d.script}</div>
+          <audio controls style="width:100%; margin-top:10px; border-radius:6px;">
+            <source src="${audioFile}" type="audio/wav"/>
+          </audio>
         </div>`;
     });
   }
@@ -723,6 +732,12 @@ Output Layer    →  14 units         — Softmax → language probabilities
       <div class="transcript-label">Spoken Text in ${lang} (${d.script}):</div>
       <div class="transcript-text">"${TRANSCRIPTS[lang]}"</div>
       <div class="transcript-meta">Linguistic Family: <b>${d.family}</b> • Region: <b>${d.region}</b></div>`;
+    // Update audio player
+    const audioFile = `audio/sample_${lang.toLowerCase()}.wav`;
+    const src = document.getElementById('sampleAudioSrc');
+    const player = document.getElementById('sampleAudio');
+    src.src = audioFile;
+    player.load();
   }
 
   function runClassifier() {
