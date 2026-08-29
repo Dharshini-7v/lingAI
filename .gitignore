@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+temp_uploads/
+train/
+*.hdf5
+users.json
+.streamlit/
