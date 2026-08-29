@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LingAI — Spoken Language Identification</title>
+  <meta name="description" content="Deep learning-based spoken language identification across 14 languages using LSTM and MFCC features." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>" />
+</head>
+<body>
+
+  <!-- ─── Navbar ─────────────────────────────────────────────── -->
+  <nav>
+    <div class="nav-logo">🎙️ LingAI</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#languages">Languages</a></li>
+      <li><a href="#architecture">Model</a></li>
+      <li><a href="#pipeline">Pipeline</a></li>
+      <li><a href="#tech">Tech Stack</a></li>
+      <li><a href="https://github.com/Dharshini-7v/lingAI" target="_blank">GitHub</a></li>
+    </ul>
+  </nav>
+
+  <!-- ─── Hero ───────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="badge">Deep Learning · Speech Processing</div>
+    <h1>Spoken Language<br /><span>Identification</span></h1>
+    <p>
+      LingAI classifies spoken audio across <strong>14 languages</strong> spanning
+      5 linguistic families using a deep LSTM network trained on MFCC features —
+      with a fully interactive Streamlit web application.
+    </p>
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="https://github.com/Dharshini-7v/lingAI" target="_blank">
+        ⭐ View on GitHub
+      </a>
+      <a class="btn btn-outline" href="#about">
+        Learn More ↓
+      </a>
+    </div>
+  </section>
+
+  <!-- ─── Stats Bar ───────────────────────────────────────────── -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-number">14</div>
+      <div class="stat-label">Languages</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">91%</div>
+      <div class="stat-label">Validation Accuracy</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">64</div>
+      <div class="stat-label">MFCC Dimensions</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">9×</div>
+      <div class="stat-label">Data Augmentation</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">5</div>
+      <div class="stat-label">Linguistic Families</div>
+    </div>
+  </div>
+
+  <!-- ─── About ──────────────────────────────────────────────── -->
+  <section id="about">
+    <h2 class="section-title">What is <span>LingAI</span>?</h2>
+    <p class="section-sub">An end-to-end spoken language identification system built with deep learning</p>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <h3>14-Language Classification</h3>
+        <p>Identifies spoken language from audio across Dravidian, Indo-Aryan, Germanic, Romance, and Sino-Tibetan language families.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧠</div>
+        <h3>Deep LSTM Model</h3>
+        <p>Two-layer LSTM network trained on 64-dimensional MFCC sequences, capturing temporal phonetic and prosodic patterns.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🇮🇳</div>
+        <h3>Indian Language Focus</h3>
+        <p>9 of 14 languages are Indian regional languages — Hindi, Tamil, Telugu, Kannada, Malayalam, Bengali, Marathi, Gujarati, and Punjabi.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💻</div>
+        <h3>CPU Deployable</h3>
+        <p>Lightweight architecture runs entirely on standard hardware without requiring GPU infrastructure.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>Visual Explanations</h3>
+        <p>Ranked confidence scores, MFCC spectrogram visualization, and linguistic family context for every prediction.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔐</div>
+        <h3>User Authentication</h3>
+        <p>Secure login and registration with SHA-256 password hashing and session management.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Features ───────────────────────────────────────────── -->
+  <section id="features" style="background: var(--card-bg); max-width:100%; padding: 5rem 2rem;">
+    <div style="max-width:1100px; margin:0 auto;">
+      <h2 class="section-title">App <span>Features</span></h2>
+      <p class="section-sub">Five interactive pages inside the Streamlit web application</p>
+      <div class="cards">
+        <div class="card">
+          <div class="card-icon">🎙️</div>
+          <h3>Real-Time Classifier</h3>
+          <p>Upload audio, record from microphone, or use pre-recorded samples to instantly classify the spoken language with confidence scores.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎵</div>
+          <h3>Audio Gallery</h3>
+          <p>Browse audio samples for all 14 languages with native scripts, regional metadata, and playback controls.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📈</div>
+          <h3>Acoustic Spectrograms</h3>
+          <p>Compare MFCC spectrogram patterns side-by-side across languages to visualize acoustic differences.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌍</div>
+          <h3>Linguistic Families</h3>
+          <p>Explore the five language families covered, with educational content on phonological relationships.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚙️</div>
+          <h3>Model Engine</h3>
+          <p>View the LSTM network topology and trigger model retraining directly from the web interface.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Languages ──────────────────────────────────────────── -->
+  <section id="languages">
+    <h2 class="section-title">Supported <span>Languages</span></h2>
+    <p class="section-sub">14 languages across 5 major linguistic families</p>
+    <div class="lang-grid">
+      <div class="lang-card">
+        <div class="flag">🇬🇧</div>
+        <div class="lang-name">English</div>
+        <div class="lang-family">Germanic</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇩🇪</div>
+        <div class="lang-name">German</div>
+        <div class="lang-family">Germanic</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇫🇷</div>
+        <div class="lang-name">French</div>
+        <div class="lang-family">Romance</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇪🇸</div>
+        <div class="lang-name">Spanish</div>
+        <div class="lang-family">Romance</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇨🇳</div>
+        <div class="lang-name">Mandarin</div>
+        <div class="lang-family">Sino-Tibetan</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇮🇳</div>
+        <div class="lang-name">Hindi</div>
+        <div class="lang-family">Indo-Aryan</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇮🇳</div>
+        <div class="lang-name">Bengali</div>
+        <div class="lang-family">Indo-Aryan</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇮🇳</div>
+        <div class="lang-name">Marathi</div>
+        <div class="lang-family">Indo-Aryan</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇮🇳</div>
+        <div class="lang-name">Gujarati</div>
+        <div class="lang-family">Indo-Aryan</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇮🇳</div>
+        <div class="lang-name">Punjabi</div>
+        <div class="lang-family">Indo-Aryan</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇮🇳</div>
+        <div class="lang-name">Tamil</div>
+        <div class="lang-family">Dravidian</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇮🇳</div>
+        <div class="lang-name">Telugu</div>
+        <div class="lang-family">Dravidian</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇮🇳</div>
+        <div class="lang-name">Kannada</div>
+        <div class="lang-family">Dravidian</div>
+      </div>
+      <div class="lang-card">
+        <div class="flag">🇮🇳</div>
+        <div class="lang-name">Malayalam</div>
+        <div class="lang-family">Dravidian</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Architecture ───────────────────────────────────────── -->
+  <section id="architecture" style="background: var(--card-bg); max-width:100%; padding: 5rem 2rem;">
+    <div style="max-width:1100px; margin:0 auto;">
+      <h2 class="section-title">Model <span>Architecture</span></h2>
+      <p class="section-sub">Deep LSTM network trained on 64-dimensional MFCC sequences</p>
+      <div class="arch-box">
+        <pre>
+  Input Layer     →  (1000, 64)      — 1000 time steps × 64 MFCC features
+       ↓
+  LSTM Layer 1    →  64 units        — Sequence-to-sequence, captures phoneme transitions
+       ↓
+  LSTM Layer 2    →  32 units        — Sequence-to-sequence, captures prosodic patterns
+       ↓
+  Dropout         →  rate = 0.15     — Regularization
+       ↓
+  Dense Layer     →  100 units, tanh — Non-linear feature compression
+       ↓
+  Output Layer    →  14 units        — Softmax → language probability distribution
+        </pre>
+      </div>
+      <br/>
+      <div class="cards">
+        <div class="card">
+          <div class="card-icon">📉</div>
+          <h3>Loss Function</h3>
+          <p>Categorical Cross-Entropy — measures divergence between predicted language probabilities and true one-hot labels.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <h3>Optimizer</h3>
+          <p>Adam with initial LR 0.002 and ReduceLROnPlateau scheduler (factor=0.5, patience=3 epochs).</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔁</div>
+          <h3>Training Config</h3>
+          <p>28 epochs, batch size 16, 85/15 train-validation split. Saved as sld.keras and sld.weights.h5.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Pipeline ───────────────────────────────────────────── -->
+  <section id="pipeline">
+    <h2 class="section-title">Processing <span>Pipeline</span></h2>
+    <p class="section-sub">From raw audio to language prediction in 6 stages</p>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot"></div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <h4>1 — Speech Synthesis</h4>
+          <p>gTTS generates 5 utterances per language, resampled to 16kHz mono WAV</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot"></div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <h4>2 — Audio Augmentation</h4>
+          <p>Pitch shift (±1, ±2), time stretch (0.9×, 1.1×), noise addition → 9× samples</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot"></div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <h4>3 — MFCC Extraction</h4>
+          <p>64-dim MFCCs at 100fps → (1000, 64) matrix with CMVN normalization</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot"></div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <h4>4 — HDF5 Dataset</h4>
+          <p>All features and one-hot labels compiled into mfcc_dataset.hdf5</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot"></div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <h4>5 — LSTM Training</h4>
+          <p>Model trained for 28 epochs, saved as sld.keras</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot"></div>
+        </div>
+        <div class="pipe-content">
+          <h4>6 — Streamlit Deployment</h4>
+          <p>Real-time inference via web app with confidence scores and MFCC visualization</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Tech Stack ─────────────────────────────────────────── -->
+  <section id="tech" style="background: var(--card-bg); max-width:100%; padding: 5rem 2rem;">
+    <div style="max-width:1100px; margin:0 auto;">
+      <h2 class="section-title">Tech <span>Stack</span></h2>
+      <p class="section-sub">Libraries and frameworks used to build LingAI</p>
+      <div class="tech-stack">
+        <span class="tech-pill">Python 3.8+</span>
+        <span class="tech-pill">TensorFlow / Keras</span>
+        <span class="tech-pill">LSTM Neural Network</span>
+        <span class="tech-pill">librosa</span>
+        <span class="tech-pill">soundfile</span>
+        <span class="tech-pill">NumPy</span>
+        <span class="tech-pill">h5py (HDF5)</span>
+        <span class="tech-pill">gTTS</span>
+        <span class="tech-pill">Streamlit</span>
+        <span class="tech-pill">MFCC Features</span>
+        <span class="tech-pill">CMVN Normalization</span>
+        <span class="tech-pill">SHA-256 Auth</span>
+        <span class="tech-pill">scikit-learn</span>
+        <span class="tech-pill">matplotlib</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Quick Start ─────────────────────────────────────────── -->
+  <section id="quickstart">
+    <h2 class="section-title">Quick <span>Start</span></h2>
+    <p class="section-sub">Get the app running in 3 steps</p>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">📦</div>
+        <h3>1. Install Dependencies</h3>
+        <p><code style="background:#0f0f1a; padding:4px 8px; border-radius:4px; font-size:0.82rem;">pip install tensorflow streamlit librosa soundfile numpy h5py gTTS</code></p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📂</div>
+        <h3>2. Clone the Repo</h3>
+        <p><code style="background:#0f0f1a; padding:4px 8px; border-radius:4px; font-size:0.82rem;">git clone https://github.com/Dharshini-7v/lingAI.git</code></p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <h3>3. Run the App</h3>
+        <p><code style="background:#0f0f1a; padding:4px 8px; border-radius:4px; font-size:0.82rem;">streamlit run app.py</code> — then open <strong>localhost:8501</strong></p>
+      </div>
+    </div>
+    <br/>
+    <div style="text-align:center;">
+      <a class="btn btn-primary" href="https://github.com/Dharshini-7v/lingAI" target="_blank">⭐ Star on GitHub</a>
+    </div>
+  </section>
+
+  <!-- ─── Footer ─────────────────────────────────────────────── -->
+  <footer>
+    <p>Built with ❤️ by <span>Dharshini</span> &nbsp;|&nbsp; LingAI — Spoken Language Identification &nbsp;|&nbsp;
+      <a href="https://github.com/Dharshini-7v/lingAI" target="_blank">GitHub</a>
+    </p>
+    <p style="margin-top:0.4rem; font-size:0.78rem;">Deep Learning · Speech Processing · 14 Languages · LSTM + MFCC</p>
+  </footer>
+
+</body>
+</html>
